@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
-
 #include "CoreMinimal.h"
 #include "DrawDebugHelpers.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Components/ActorComponent.h"
 #include "Grabber.generated.h"
 
@@ -29,4 +28,5 @@ private:
 	//how far ahead of the player can we reach in cm
 	float Reach = 100.0f;
 	
+	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 };
