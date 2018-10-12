@@ -33,15 +33,27 @@ void UGrabber::Grab()
 	UE_LOG(LogTemp, Warning, TEXT("Grab key pressed"))
 
 	/// line trace and see if we reach any actors with physics body collision channel set
-	GetFirstPhysicsBodyInReach();
-		///if we hit something, attach physics handle
-		//TODO attach physics channel
+	auto HitResult = GetFirstPhysicsBodyInReach();
+	auto ComponentToGrab = HitResult.GetComponent();
+	auto ActorHit = HitResult.GetActor();
+		//if we hit something, attach physics handle
+	if (ActorHit)
+	{
+		PhysicsHandle->GrabComponentAtLocationWithRotation
+		(
+			ComponentToGrab,
+			NAME_None,
+			ComponentToGrab->GetOwner()->GetActorLocation(),
+			ComponentToGrab->GetOwner()->GetActorRotation()
+		);
+	}
 }
 
 void UGrabber::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab key released"))
-		//TODO release physics
+
+		PhysicsHandle->ReleaseComponent();
 }
 
 void UGrabber::FindHandlePhysicsComponent()
@@ -79,6 +91,7 @@ void UGrabber::SetupInputComponent()
 
 FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 {
+	///get player view point this tick
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
@@ -110,7 +123,7 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 		UE_LOG(LogTemp, Warning, TEXT("trace hit :%s"), (*ActorHit->GetName()))
 	};
 
-	return FHitResult();
+	return Hit;
 }
 
 // Called every frame
@@ -118,8 +131,20 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//if physics handle is attached, move the object we're holding
+	///get player view point this tick
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		OUT PlayerViewPointLocation,
+		OUT PlayerViewPointRotation
+	);
 
+	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
+	//if physics handle is attached, move the object we're holding
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+	}
 	// Get player viewpoint this tick
 	
 }
