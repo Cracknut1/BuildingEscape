@@ -23,6 +23,10 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 	Owner = GetOwner();
+	if (!PressurePlate)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s missing trigger volume"), *Owner->GetName())
+	}
 }
 
 
@@ -33,6 +37,7 @@ void UOpenDoor::OpenDoor()
 
 void UOpenDoor::CloseDoor()
 {
+	if (!Owner) { return; }
 	Owner->SetActorRotation(FRotator(0.f, 0.f, 0.f));
 }
 
@@ -60,10 +65,12 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 float UOpenDoor::GetTotalMassOfActorsOnPlate()
 {
+
 	float TotalMass = 0.0f;
 
 	//find all the overlapping actors
 	TArray<AActor*> OverlappingActors;
+	if (!PressurePlate) { return TotalMass;  }
 	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
 
 	//iterate through them adding their masses
