@@ -75,11 +75,9 @@ Intermediate/*
 DerivedDataCache/*
 
 # Unreal files
-*_BuildData.uasset
 */Build
 */Intermediate/
 */Saved/
 */Binaries/
 */DerivedDataCache
 BuildingEscape/Content/StarterContent/
-BuildingEscape/Content/*
